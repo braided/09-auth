@@ -15,12 +15,14 @@ export async function POST(req: NextRequest) {
     const setCookie = apiRes.headers["set-cookie"];
 
     if (setCookie) {
-      const cookieArray = Array.isArray(setCookie) ? setCookie : [setCookie];
+      const cookieArray = Array.isArray(setCookie)
+        ? setCookie
+        : [setCookie];
 
       for (const cookieStr of cookieArray) {
         const parsed = parseSetCookie(cookieStr);
 
-        if (parsed.name === "accessToken") {
+        if (parsed.name === "accessToken" && parsed.value) {
           cookieStore.set("accessToken", parsed.value, {
             expires: parsed.expires,
             path: parsed.path,
@@ -28,7 +30,7 @@ export async function POST(req: NextRequest) {
           });
         }
 
-        if (parsed.name === "refreshToken") {
+        if (parsed.name === "refreshToken" && parsed.value) {
           cookieStore.set("refreshToken", parsed.value, {
             expires: parsed.expires,
             path: parsed.path,

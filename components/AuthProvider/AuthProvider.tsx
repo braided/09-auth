@@ -2,7 +2,7 @@
 
 import { getMe } from "@/lib/api/clientApi";
 
-import { useUserToken } from "@/lib/store/authStore";
+import { useAuthStore } from "@/lib/store/authStore";
 import { useEffect } from "react";
 
 type Props = {
@@ -10,19 +10,19 @@ type Props = {
 };
 
 const AuthProvider = ({ children }: Props) => {
-  const setUser = useUserToken((state) => state.setUser);
-  const clearIsAuthenticated = useUserToken((state) => state.clearUser);
+  const setUser = useAuthStore((state) => state.setUser);
+  const clearisAuthenticatedenticated = useAuthStore((state) => state.clearIsAuthenticated);
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const user = await getMe();
         setUser(user);
       } catch {
-        clearIsAuthenticated();
+        clearisAuthenticatedenticated();
       }
     };
     fetchUser();
-  }, [setUser, clearIsAuthenticated]);
+  }, [setUser, clearisAuthenticatedenticated]);
 
   return children;
 };

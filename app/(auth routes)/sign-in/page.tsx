@@ -3,13 +3,13 @@ import { useRouter } from "next/navigation";
 import css from "./SignInPage.module.css";
 import { useState } from "react";
 import { loginUser, UserData } from "@/lib/api/clientApi";
-import { useUserToken } from "@/lib/store/authStore";
+import { useAuthStore } from "@/lib/store/authStore";
 
 export default function SignInPage() {
   const router = useRouter();
   const [error, setError] = useState("");
 
-  const setUser = useUserToken((state) => state.setUser);
+  const setUser = useAuthStore((state) => state.setUser);
 
   const handleSubmit = async (formData: FormData) => {
     try {

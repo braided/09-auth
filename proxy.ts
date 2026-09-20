@@ -36,7 +36,7 @@ export async function proxy(request: NextRequest) {
         for (const cookieStr of cookieArray) {
           const parsed = parseSetCookie(cookieStr);
 
-          if (parsed.name === "accessToken") {
+          if (parsed.name === "accessToken" && parsed.value) {
             cookieStore.set("accessToken", parsed.value, {
               expires: parsed.expires,
               path: parsed.path,
@@ -44,7 +44,7 @@ export async function proxy(request: NextRequest) {
             });
           }
 
-          if (parsed.name === "refreshToken") {
+          if (parsed.name === "refreshToken" && parsed.value) {
             cookieStore.set("refreshToken", parsed.value, {
               expires: parsed.expires,
               path: parsed.path,
@@ -94,6 +94,8 @@ export async function proxy(request: NextRequest) {
   if (isPrivateRoute) {
     return NextResponse.next();
   }
+
+  return NextResponse.next();
 }
 
 export const config = {
