@@ -13,7 +13,10 @@ export async function GET() {
     const refreshToken = cookieStore.get("refreshToken")?.value;
 
     if (accessToken) {
-      return NextResponse.json({ success: true });
+      return NextResponse.json(
+        { success: true },
+        { status: 200 },
+      );
     }
 
     if (refreshToken) {
@@ -33,21 +36,7 @@ export async function GET() {
         for (const cookieStr of cookieArray) {
           const parsed = parseSetCookie(cookieStr);
 
-          if (parsed.name === "accessToken" && parsed.value) {
-            cookieStore.set("accessToken", parsed.value, {
-              expires: parsed.expires,
-              path: parsed.path,
-              maxAge: parsed.maxAge,
-            });
-          }
-
-          if (parsed.name === "refreshToken" && parsed.value) {
-            cookieStore.set("refreshToken", parsed.value, {
-              expires: parsed.expires,
-              path: parsed.path,
-              maxAge: parsed.maxAge,
-            });
-          }
+          cookieStore.set(parsed.name, parsed.value!, parsed);
         }
 
         return NextResponse.json(
