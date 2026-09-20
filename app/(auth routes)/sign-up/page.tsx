@@ -2,38 +2,56 @@
 
 import css from "./SignUpPage.module.css";
 import { useState } from "react";
-import { loginUser, registerUser, UserData } from "@/lib/api/clientApi";
+import {
+  loginUser,
+  register,
+  UserData,
+} from "@/lib/api/clientApi";
 import { useRouter } from "next/navigation";
-import { useUserToken } from "@/lib/store/authStore";
+import { useAuthStore } from "@/lib/store/authStore";
 
 export default function SignUp() {
   const router = useRouter();
+
   const [isError, setIsError] = useState(false);
-  const setUser = useUserToken((s) => s.setUser);
+
+  const setUser = useAuthStore(
+    (state) => state.setUser,
+  );
+
   const handleSubmit = async (formData: FormData) => {
     try {
-      const formValues = Object.fromEntries(formData) as unknown as UserData;
+      setIsError(false);
 
-      await registerUser(formValues);
+      const formValues =
+        Object.fromEntries(formData) as unknown as UserData;
+
+      await register(formValues);
 
       const user = await loginUser({
         email: formValues.email,
         password: formValues.password,
       });
+
       setUser(user);
+
       router.push("/profile");
     } catch {
       setIsError(true);
     }
   };
+
   return (
     <main className={css.mainContent}>
       <h1 className={css.formTitle}>Sign up</h1>
+
       <form
         className={css.form}
-        action={handleSubmit}>
+        action={handleSubmit}
+      >
         <div className={css.formGroup}>
           <label htmlFor="email">Email</label>
+
           <input
             id="email"
             type="email"
@@ -44,7 +62,10 @@ export default function SignUp() {
         </div>
 
         <div className={css.formGroup}>
-          <label htmlFor="password">Password</label>
+          <label htmlFor="password">
+            Password
+          </label>
+
           <input
             id="password"
             type="password"
@@ -57,12 +78,15 @@ export default function SignUp() {
         <div className={css.actions}>
           <button
             type="submit"
-            className={css.submitButton}>
+            className={css.submitButton}
+          >
             Register
           </button>
         </div>
 
-        {isError && <p className={css.error}>Error</p>}
+        {isError && (
+          <p className={css.error}>Error</p>
+        )}
       </form>
     </main>
   );

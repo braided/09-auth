@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Profile",
     description: "Profile page to user",
-    url: "https://08-zustand-ruddy-two.vercel.app/ptofile",
+    url: "https://08-zustand-ruddy-two.vercel.app/profile",
     images: [
       {
         url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg?_gl=1*1mlqxp9*_gcl_au*NTc5NjMyMzM4LjE3Nzg5NDA5OTk.*_ga*MTIyMjk4MTE4NS4xNzc4ODQzNzA0*_ga_PW0T7S5LDQ*czE3ODE1MzAwMjQkbzEyNiRnMCR0MTc4MTUzMDAzMSRqNTMkbDAkaDA.",
@@ -21,17 +21,23 @@ export const metadata: Metadata = {
 
 export default async function ProfilePage() {
   const user = await getMe();
+
   return (
     <main className={css.mainContent}>
       <div className={css.profileCard}>
         <div className={css.header}>
-          <h1 className={css.formTitle}>Profile Page</h1>
+          <h1 className={css.formTitle}>
+            Profile Page
+          </h1>
+
           <Link
-            href={"profile/edit"}
-            className={css.editProfileButton}>
+            href="/profile/edit"
+            className={css.editProfileButton}
+          >
             Edit Profile
           </Link>
         </div>
+
         <div className={css.avatarWrapper}>
           <Image
             src={user.avatar}
@@ -41,6 +47,7 @@ export default async function ProfilePage() {
             className={css.avatar}
           />
         </div>
+
         <div className={css.profileInfo}>
           <p>Username: {user.username}</p>
           <p>Email: {user.email}</p>
