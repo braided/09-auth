@@ -1,37 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
+
+import { api } from "../../api";
 import { cookies } from "next/headers";
+
 import { parseSetCookie } from "cookie";
+
+import { isAxiosError } from "axios";
+
+import { logErrorResponse } from "../../_utils/utils";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      },
-    );
-
-    if (!response.ok) {
-      const errorData = await response.json();
-
-      return NextResponse.json(errorData, {
-        status: response.status,
-      });
-    }
-
-    const data = await response.json();
+    const apiRes = await api.post("auth/register", body);
 
     const cookieStore = await cookies();
-    const setCookieHeader = response.headers.get("set-cookie");
+    const setCookie = apiRes.headers["set-cookie"];
 
-    if (setCookieHeader) {
-      const cookieArray = setCookieHeader.split(/,(?=\s*[^;,]+=)/);
+    if (setCookie) {
+      const cookieArray = Array.isArray(setCookie)
+        ? setCookie
+        : [setCookie];
 
       for (const cookieStr of cookieArray) {
         const parsed = parseSetCookie(cookieStr);
@@ -40,14 +30,37 @@ export async function POST(req: NextRequest) {
           cookieStore.set(parsed.name, parsed.value, parsed);
         }
       }
+
+      return NextResponse.json(apiRes.data, {
+        status: apiRes.status,
+      });
     }
 
-    return NextResponse.json(data);
+    return NextResponse.json(
+      { error: "Unauthorized" },
+      { status: 401 },
+    );
   } catch (error) {
-    console.error("Register error:", error);
+    if (isAxiosError(error)) {
+      logErrorResponse(error.response?.data);
+
+      return NextResponse.json(
+        {
+          error: error.message,
+          response: error.response?.data,
+        },
+        {
+          status: error.status,
+        },
+      );
+    }
+
+    logErrorResponse({
+      message: (error as Error).message,
+    });
 
     return NextResponse.json(
-      { message: "Internal Server Error" },
+      { error: "Internal Server Error" },
       { status: 500 },
     );
   }
